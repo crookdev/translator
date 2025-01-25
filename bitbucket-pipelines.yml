@@ -1,0 +1,20 @@
+image: docker:24.0.5
+
+pipelines:
+  branches:
+    production:
+      - step:
+          name: "Unit tests and integration tests and Lints"
+          runs-on:
+            - self.hosted
+          script:
+            - apk add --no-cache python3 py3-pip
+            - python3 --version
+            - pip --version
+            - export DOCKER_BUILDKIT=0
+            - docker compose up --detach
+            - pip install requests
+            - python3 ./tests/integration_sanity_check.py
+            - docker compose down
+          services:
+            - docker
